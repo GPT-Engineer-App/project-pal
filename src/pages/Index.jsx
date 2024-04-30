@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Box, Button, Input, List, ListItem, Text, VStack, IconButton, useToast } from "@chakra-ui/react";
+import { Box, Button, Input, List, ListItem, Text, VStack, IconButton, useToast, Checkbox } from "@chakra-ui/react";
 import { FaPlus, FaTrash } from "react-icons/fa";
 
 const Index = () => {
-  const [todos, setTodos] = useState([]);
+  const [todos, setTodos] = useState([{ text: "Sample Todo", isCompleted: false }]);
   const [input, setInput] = useState("");
   const toast = useToast();
 
@@ -18,7 +18,7 @@ const Index = () => {
       });
       return;
     }
-    setTodos([...todos, input]);
+    setTodos([...todos, { text: input, isCompleted: false }]);
     setInput("");
   };
 
@@ -29,6 +29,16 @@ const Index = () => {
 
   const handleInputChange = (event) => {
     setInput(event.target.value);
+  };
+
+  const handleToggleTodo = (index) => {
+    const updatedTodos = todos.map((todo, i) => {
+      if (i === index) {
+        return { ...todo, isCompleted: !todo.isCompleted };
+      }
+      return todo;
+    });
+    setTodos(updatedTodos);
   };
 
   const handleKeyPress = (event) => {
@@ -46,10 +56,11 @@ const Index = () => {
         <Input placeholder="Add a new task" value={input} onChange={handleInputChange} onKeyPress={handleKeyPress} />
         <IconButton icon={<FaPlus />} colorScheme="blue" onClick={handleAddTodo} ml={2} aria-label="Add todo" />
       </Box>
-      <List spacing={3} w="100%">
+      <List spacing={5} w="100%">
         {todos.map((todo, index) => (
           <ListItem key={index} display="flex" justifyContent="space-between" alignItems="center">
-            <Text>{todo}</Text>
+            <Checkbox isChecked={todo.isCompleted} onChange={() => handleToggleTodo(index)} mr={2} />
+            <Text as={todo.isCompleted ? "s" : undefined}>{todo.text}</Text>
             <IconButton icon={<FaTrash />} colorScheme="red" onClick={() => handleDeleteTodo(index)} aria-label="Delete todo" />
           </ListItem>
         ))}
